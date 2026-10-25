@@ -5,7 +5,7 @@ import { useStore } from "./contexts/store";
 import { useToast } from "./contexts/toast";
 
 const API_URL = import.meta.env.PROD
-  ? `http://${window.location.host}/`
+  ? `${window.location.origin}/`
   : import.meta.env.VITE_BASE_URL;
 
 export const ResetScheduleButton = () => {

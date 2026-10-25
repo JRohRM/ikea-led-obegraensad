@@ -4,7 +4,7 @@ import { Layout } from "./components/layout/layout";
 import { useToast } from "./contexts/toast";
 
 const API_URL = import.meta.env.PROD
-  ? `http://${window.location.host}/`
+  ? `${window.location.origin}/`
   : import.meta.env.VITE_BASE_URL;
 
 // POSIX TZ strings, the device cannot resolve IANA names like "Europe/Berlin"
