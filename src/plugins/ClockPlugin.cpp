@@ -11,6 +11,11 @@ void ClockPlugin::setup()
   Screen.setPixel(10, 7, 1);
   Screen.setPixel(11, 7, 1);
 
+  redraw();
+}
+
+void ClockPlugin::redraw()
+{
   previousMinutes = -1;
   previousHour = -1;
   previousHH.clear();

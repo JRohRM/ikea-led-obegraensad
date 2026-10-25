@@ -3,8 +3,14 @@
 
 void TickingClockPlugin::setup()
 {
+  redraw();
+}
+
+void TickingClockPlugin::redraw()
+{
   previousMinutes = -1;
   previousHour = -1;
+  previousSecond = -1;
   previousHH.clear();
   previousMM.clear();
 }

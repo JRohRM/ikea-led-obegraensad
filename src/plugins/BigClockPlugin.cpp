@@ -11,6 +11,11 @@ void BigClockPlugin::setup()
   Screen.setPixel(10, 7, 1);
   Screen.setPixel(11, 7, 1);
 
+  redraw();
+}
+
+void BigClockPlugin::redraw()
+{
   previousMinutes = -1;
   previousHour = -1;
   previousHH.clear();

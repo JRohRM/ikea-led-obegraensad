@@ -238,6 +238,13 @@ void PongClockPlugin::setup()
   reset();
 }
 
+void PongClockPlugin::redraw()
+{
+  // ball and paddles are drawn every loop, the digits only when they change
+  previousDigits.clear();
+  drawDigits();
+}
+
 void PongClockPlugin::loop()
 {
   unsigned long currentMillis = millis();

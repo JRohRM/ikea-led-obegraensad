@@ -16,5 +16,6 @@ private:
 public:
   void setup() override;
   void loop() override;
+  void redraw() override;
   const char *getName() const override;
 };

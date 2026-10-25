@@ -1,4 +1,5 @@
 #include "messages.h"
+#include "PluginManager.h"
 #include "timing.h"
 #include <SPI.h>
 
@@ -94,6 +95,9 @@ void Messages_::scroll()
   }
 
   currentStatus = previousStatus;
+  // the scroll cleared the screen, the plugin would otherwise only redraw
+  // what changes next (a clock: the next minute)
+  pluginManager.redrawActivePlugin();
 }
 
 void Messages_::scrollMessageEveryMinute()

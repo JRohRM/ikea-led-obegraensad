@@ -31,6 +31,9 @@ void Plugin::teardown()
 void Plugin::loop()
 {
 }
+void Plugin::redraw()
+{
+}
 void Plugin::websocketHook(JsonDocument &request)
 {
 }
@@ -170,6 +173,15 @@ void PluginManager::setupActivePlugin()
   {
     renderPluginId(activePlugin->getId());
     activePlugin->setup();
+  }
+}
+
+void PluginManager::redrawActivePlugin()
+{
+  PLUGIN_GUARD;
+  if (activePlugin)
+  {
+    activePlugin->redraw();
   }
 }
 
