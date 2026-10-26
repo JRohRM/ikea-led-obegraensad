@@ -4,6 +4,8 @@ export const MIN_FRAME_DELAY_MS = 10;
 export const MAX_FRAME_DELAY_MS = 2000;
 export const MAX_FRAME_DELAY_INPUT_MS = 10000;
 export const FRAME_DELAY_STEP_MS = 10;
+// AnimationPlugin::MAX_FRAMES on the device
+export const MAX_ANIMATION_FRAMES = 128;
 
 export const HISTORY_LIMIT = 50;
 export const HISTORY_DEBOUNCE_MS = 300;

@@ -1,5 +1,15 @@
 #include "plugins/AnimationPlugin.h"
 #include "websocket.h"
+#ifdef ESP32
+#include <mutex>
+
+// frames are changed from the websocket task while the screen task plays
+// them, adding a frame can move the list in memory mid read
+static std::mutex framesLock;
+#define FRAMES_GUARD std::lock_guard<std::mutex> guard(framesLock)
+#else
+#define FRAMES_GUARD
+#endif
 
 void AnimationPlugin::setup()
 {
@@ -26,35 +36,44 @@ void AnimationPlugin::setup()
 
 void AnimationPlugin::loop()
 {
-  size_t size = customAnimationFrames.size();
-
-  if (size > 0)
+  std::vector<int> frame;
   {
+    // copy the frame, the wait below must not hold the lock
+    FRAMES_GUARD;
+    size_t size = customAnimationFrames.size();
+    if (size == 0)
+    {
+      return;
+    }
+
     // The frame list can shrink under us (resetFrames, a shorter upload)
     if (this->step >= size)
     {
       this->step = 0;
     }
 
-    std::vector<int> bits = Screen.readBytes(customAnimationFrames[this->step]);
-
-    for (int i = 0; i < bits.size(); i++)
-    {
-      Screen.setPixelAtIndex(i, bits[i]);
-    }
+    frame = customAnimationFrames[this->step];
 
     this->step++;
     if (this->step >= size)
     {
       this->step = 0;
     }
-
-    Screen.presentAndWait(frameDelay);
   }
+
+  std::vector<int> bits = Screen.readBytes(frame);
+
+  for (int i = 0; i < bits.size(); i++)
+  {
+    Screen.setPixelAtIndex(i, bits[i]);
+  }
+
+  Screen.presentAndWait(frameDelay);
 }
 
 void AnimationPlugin::websocketHook(JsonDocument &request)
 {
+  FRAMES_GUARD;
   const char *event = request["event"];
   if (!strcmp(event, "upload") || !strcmp(event, "resetFrames") || !strcmp(event, "configAnimation")) {
     if (request["frameDelay"].is<int>())

@@ -24,6 +24,7 @@ import {
   DEFAULT_FRAME_DELAY_MS,
   HISTORY_DEBOUNCE_MS,
   INITIAL_HISTORY_SAVE_DELAY_MS,
+  MAX_ANIMATION_FRAMES,
 } from "./creator/constants";
 import { useAnimation } from "./creator/hooks/useAnimation";
 import { useAnimationStorage } from "./creator/hooks/useAnimationStorage";
@@ -153,15 +154,22 @@ export const Creator: Component = () => {
   const handleUploadData = () => {
     if (isAnimationPluginActive()) {
       const screens = screenSignals().map(([screen]) => screen());
+      if (screens.length > MAX_ANIMATION_FRAMES) {
+        toast(`Too many frames, the device keeps at most ${MAX_ANIMATION_FRAMES}`, 3000);
+        return;
+      }
 
-      actions.send(
-        JSON.stringify({
-          event: "upload",
-          screens: screens.length,
-          frameDelay: animationDelayMs(),
-          data: screens.map((screen) => matrixToHexArray(screen.map((s) => (s > 0 ? 1 : 0)))),
-        }),
-      );
+      // one message per frame: the device drops websocket messages that arrive
+      // split over several TCP packets, which a whole animation quickly is
+      actions.send(JSON.stringify({ event: "resetFrames", frameDelay: animationDelayMs() }));
+      for (const screen of screens) {
+        actions.send(
+          JSON.stringify({
+            event: "addFrame",
+            data: matrixToHexArray(screen.map((s) => (s > 0 ? 1 : 0))),
+          }),
+        );
+      }
 
       toast("Data uploaded successfully!", 3000);
     } else {
